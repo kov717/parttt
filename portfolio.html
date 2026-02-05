@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ковалёв Станислав — Digital IT Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #050507;
+      --card: rgba(20, 20, 25, 0.6);
+      --card-hover: rgba(30, 30, 40, 0.8);
+      --accent: #00ff9d; /* Неон зеленый */
+      --accent-glow: rgba(0, 255, 157, 0.4);
+      --accent2: #00c3ff; /* Неон синий */
+      --text: #ffffff;
+      --text-sec: #94a3b8;
+      --border: rgba(255, 255, 255, 0.08);
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    body.light {
+      --bg: #f1f5f9;
+      --card: rgba(255, 255, 255, 0.85);
+      --card-hover: #ffffff;
+      --text: #1e293b;
+      --text-sec: #64748b;
+      --border: rgba(0, 0, 0, 0.05);
+      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background 0.5s ease, color 0.5s ease;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
+    /* Canvas Background */
+    #bgCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+      opacity: 0.6;
+    }
+
+    /* Навигация */
+    nav {
+      position: fixed;
+      top: 25px; left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 1200px;
+      z-index: 1000;
+      background: rgba(10, 10, 12, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 12px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+
+    body.light nav { background: rgba(255, 255, 255, 0.8); }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      list-style: none;
+    }
+
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      position: relative;
+      transition: 0.3s;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px; left: 0;
+      width: 0; height: 2px;
+      background: var(--accent);
+      transition: 0.3s;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    nav a:hover::after { width: 100%; }
+
+    #themeToggle {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+    }
+
+    #themeToggle:hover { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent-glow); }
+
+    /* Hero Section */
+    header {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 140px 20px 80px;
+      position: relative;
+    }
+
+    .hero {
+      max-width: 1200px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-text h1 {
+      font-size: clamp(42px, 6vw, 80px);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      letter-spacing: -2px;
+    }
+
+    .hero-text h1 span {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(0, 255, 157, 0.2);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 25px;
+      padding: 8px 20px;
+      border-radius: 100px;
+      background: rgba(0, 255, 157, 0.1);
+      border: 1px solid rgba(0, 255, 157, 0.2);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      box-shadow: 0 0 15px rgba(0, 255, 157, 0.1);
+    }
+
+    .hero-desc {
+      font-size: 18px;
+      color: var(--text-sec);
+      margin-bottom: 30px;
+      max-width: 600px;
+      border-left: 3px solid var(--accent);
+      padding-left: 20px;
+    }
+
+    /* Карта статистики */
+    .card-main {
+      background: var(--card);
+      border-radius: 32px;
+      padding: 40px;
+      border: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--glass-shadow);
+      transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+      transition: transform 0.5s ease;
+    }
+    
+    .card-main:hover { transform: perspective(1000px) rotateY(0) rotateX(0); }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .stat-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      transition: 0.3s;
+    }
+
+    .stat-item:hover {
+      background: rgba(0, 255, 157, 0.05);
+      border-color: var(--accent);
+      transform: translateY(-5px);
+    }
+
+    .stat-item h3 { color: var(--accent); font-size: 32px; font-weight: 800; margin-bottom: 5px; }
+    .stat-item p { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-sec); letter-spacing: 1px; }
+
+    /* Общие секции */
+    section { padding: 100px 20px; max-width: 1200px; margin: auto; position: relative; }
+    
+    .section-title {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 60px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-title::after {
+      content: ''; position: absolute; bottom: -10px; left: 0;
+      width: 80px; height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    /* СТИЛЬ СТАРОЙ ГАЛЕРЕИ (НОВАЯ РЕАЛИЗАЦИЯ) */
+    .gallery-wrapper {
+      position: relative;
+      border-radius: 30px;
+      padding: 20px 0;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.2);
+    }
+
+    .gallery-track {
+      display: flex;
+      gap: 20px;
+      width: max-content;
+      animation: scroll 40s linear infinite;
+    }
+    
+    /* Дублируем трек для бесшовной анимации через JS или CSS (здесь через CSS зацикливание контента) */
+    /* Но для простоты просто сделаем очень длинную ленту */
+
+    .gallery-track img {
+      width: 300px;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 20px;
+      transition: 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      filter: grayscale(40%) brightness(0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .gallery-track img:hover {
+      transform: scale(1.05);
+      filter: grayscale(0%) brightness(1.1);
+      border-color: var(--accent);
+      box-shadow: 0 10px 30px rgba(0, 255, 157, 0.2);
+      z-index: 10;
+    }
+
+    .gallery-wrapper:hover .gallery-track {
+      animation-play-state: paused; /* Остановить при наведении */
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); } /* Сдвигаем на половину, если контент удвоен */
+    }
+
+    /* Грамоты */
+    .certs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .cert-card {
+      background: #fff;
+      color: #1a1a1a;
+      border-radius: 4px;
+      padding: 30px;
+      position: relative;
+      text-align: center;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      transition: 0.4s;
+      border: 10px solid #f8f8f8;
+    }
+
+    .cert-card:hover { transform: translateY(-10px) scale(1.02); z-index: 2; }
+    .cert-card::before {
+      content: ''; position: absolute;
+      top: 5px; left: 5px; right: 5px; bottom: 5px;
+      border: 2px double #d4af37; pointer-events: none;
+    }
+    .cert-header h3 { font-family: serif; font-size: 24px; color: #b8860b; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; }
+    .cert-body p { font-family: serif; font-size: 16px; margin-bottom: 10px; color: #333; line-height: 1.4; }
+    .cert-name { font-weight: bold; font-size: 18px; text-decoration: underline; text-decoration-color: #b8860b; }
+    .cert-date { font-size: 14px; margin-top: 15px; color: #666; font-style: italic; }
+    .seal { width: 80px; height: 80px; border: 3px solid rgba(184, 134, 11, 0.3); border-radius: 50%; position: absolute; bottom: 30px; right: 30px; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); }
+    .seal i { font-size: 40px; color: rgba(184, 134, 11, 0.4); }
+
+    /* Аккордеон */
+    .accordion-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
+    .acc-item { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; transition: 0.3s; }
+    .acc-item:hover { border-color: rgba(255,255,255,0.2); }
+    .acc-trigger { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 25px; background: none; border: none; color: var(--text); font-size: 18px; font-weight: 700; cursor: pointer; text-align: left; }
+    .acc-trigger i { transition: 0.3s; color: var(--accent); }
+    .acc-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; background: rgba(0,0,0,0.2); }
+    .acc-content p { padding: 25px; color: var(--text-sec); font-size: 15px; border-top: 1px solid var(--border); }
+    .acc-item.active .acc-trigger i { transform: rotate(180deg); }
+    .acc-item.active { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 255, 157, 0.1); }
+
+    /* Проекты */
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+    .project-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 30px; transition: 0.4s; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
+    .project-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transform: scaleX(0); transform-origin: left; transition: 0.4s; }
+    .project-card:hover { transform: translateY(-10px); background: var(--card-hover); }
+    .project-card:hover::before { transform: scaleX(1); }
+    .project-card h3 { color: var(--accent); font-size: 20px; margin-bottom: 15px; }
+    .project-card p { font-size: 14px; color: var(--text-sec); }
+    .tech-icon { font-size: 40px; margin-bottom: 20px; opacity: 0.8; color: var(--accent2); }
+
+    /* Контакты */
+    .contact-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+    .contact-btn { flex: 1; min-width: 250px; padding: 30px; background: var(--card); border: 1px solid var(--border); border-radius: 24px; text-decoration: none; color: var(--text); display: flex; align-items: center; gap: 20px; transition: 0.3s; }
+    .contact-btn:hover { background: var(--accent); color: #000; transform: scale(1.02); box-shadow: 0 0 20px var(--accent-glow); }
+    .contact-icon { width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+
+    footer { text-align: center; padding: 60px 20px; border-top: 1px solid var(--border); color: var(--text-sec); font-size: 14px; background: rgba(0,0,0,0.2); }
+
+    /* Анимации */
+    .hidden { opacity: 0; transform: translateY(30px); transition: 0.8s ease; }
+    .show { opacity: 1; transform: translateY(0); }
+
+    @media(max-width: 900px) {
+      .hero { grid-template-columns: 1fr; text-align: center; }
+      .hero-desc { border-left: none; border-bottom: 3px solid var(--accent); padding-left: 0; padding-bottom: 20px; margin: 0 auto 30px; }
+      .card-main { transform: none; margin-top: 30px; }
+      .nav-links { display: none; }
+      nav { justify-content: center; }
+      .accordion-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<nav>
+  <div style="font-weight: 800; font-size: 18px; letter-spacing: -1px;">STANISLAV<span style="color:var(--accent)">.DEV</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">Обо мне</a></li>
+    <li><a href="#certificates">Грамоты</a></li>
+    <li><a href="#projects">Проекты</a></li>
+    <li><a href="#gallery">Галерея</a></li>
+    <li><a href="#contact">Контакты</a></li>
+  </ul>
+  <button id="themeToggle"><i class="fas fa-moon"></i></button>
+</nav>
+
+<header id="about">
+  <div class="hero">
+    <div class="hero-text hidden">
+      <div class="badge"><i class="fas fa-code"></i> IT Portfolio 2026</div>
+      <h1>Ковалёв <span>Станислав</span><br>Александрович</h1>
+      <p class="hero-desc">
+        Мне 18 лет, я студент колледжа МАБ (г. Алматы). Спортсмен, зам старосты группы '31 ПО', активист и будущий IT-специалист. 
+        Превращаю код в решения, а идеи — в реальные проекты.
+      </p>
+      <div style="display: flex; gap: 15px; justify-content: flex-start;">
+        <a href="#projects" class="contact-btn" style="flex: initial; padding: 12px 30px; background: var(--accent); color: #000; border: none;">
+          Смотреть работы <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="card-main hidden">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <i class="fas fa-project-diagram" style="color: var(--accent); margin-bottom: 10px; font-size: 24px;"></i>
+          <h3>35+</h3>
+          <p>Проектов</p>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-dumbbell" style="color: var(--accent2); margin-bottom: 10px; font-size: 24px;"></i>
+          <h3>Pro</h3>
+          <p>Спортсмен</p>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-server" style="color: var(--accent); margin-bottom: 10px; font-size: 24px;"></i>
+          <h3>4 г.</h3>
+          <p>В IT</p>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-star" style="color: var(--accent2); margin-bottom: 10px; font-size: 24px;"></i>
+          <h3>100%</h3>
+          <p>Отдача</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="certificates">
+  <h2 class="section-title hidden">Сертификаты и Грамоты</h2>
+  <div class="certs-grid">
+    
+    <div class="cert-card hidden">
+      <div class="cert-header">
+        <i class="fas fa-certificate" style="font-size: 40px; color: #d4af37; margin-bottom: 10px;"></i>
+        <h3>Сертификат компетенции</h3>
+      </div>
+      <div class="cert-body">
+        <p>Настоящим подтверждается, что</p>
+        <p class="cert-name">Ковалёв Станислав Александрович</p>
+        <p>2007 г.р.</p>
+        <p>успешно освоил профессиональные навыки в области разработки ПО и системного администрирования.</p>
+        <div class="cert-date">Выдан: 2024 • Колледж МАБ</div>
+      </div>
+      <div class="seal"><i class="fas fa-check"></i></div>
+    </div>
+
+    <div class="cert-card hidden">
+      <div class="cert-header">
+        <i class="fas fa-award" style="font-size: 40px; color: #d4af37; margin-bottom: 10px;"></i>
+        <h3>Почетная грамота</h3>
+      </div>
+      <div class="cert-body">
+        <p>Награждается</p>
+        <p class="cert-name">Ковалёв Станислав Александрович</p>
+        <p>2007 г.р.</p>
+        <p>за активное участие в жизни колледжа и высокие показатели в учебной деятельности.</p>
+        <div class="cert-date">Подпись: Директор МАБ</div>
+      </div>
+      <div class="seal"><i class="fas fa-star"></i></div>
+    </div>
+
+    <div class="cert-card hidden">
+      <div class="cert-header">
+        <i class="fas fa-medal" style="font-size: 40px; color: #d4af37; margin-bottom: 10px;"></i>
+        <h3>Благодарность</h3>
+      </div>
+      <div class="cert-body">
+        <p>Благодарится</p>
+        <p class="cert-name">Ковалёв Станислав Александрович</p>
+        <p>2007 г.р.</p>
+        <p>за волю к победе, лидерские качества и умение совмещать спорт с IT-образованием.</p>
+        <div class="cert-date">Спорткомитет Колледжа</div>
+      </div>
+      <div class="seal"><i class="fas fa-trophy"></i></div>
+    </div>
+
+  </div>
+</section>
+
+<section id="achievements">
+  <h2 class="section-title hidden">Навыки и Активность</h2>
+  <div class="accordion-grid">
+    
+    <div class="acc-item hidden">
+      <button class="acc-trigger">
+        Личностные качества <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="acc-content">
+        <p>Ответственный, дисциплинированный, нацеленный на результат. Коммуникабелен, легко нахожу общий язык с людьми. Проявляю лидерские качества, сохраняю спокойствие в стрессовых ситуациях.</p>
+      </div>
+    </div>
+
+    <div class="acc-item hidden">
+      <button class="acc-trigger">
+        Спорт и Физкультура <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="acc-content">
+        <p>Бокс, ММА, самбо, каратэ, борьба, айкидо, кикбоксинг, джиу-джитсу, муай-тай, плавание, тренажёрный зал. Участие в спортивных событиях колледжа.</p>
+      </div>
+    </div>
+
+    <div class="acc-item hidden">
+      <button class="acc-trigger">
+        Учёба и Практика <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="acc-content">
+        <p>Высокая успеваемость. Инвентаризация оборудования, разработка рабочей среды, функции системного администратора. Участие в реальных рабочих процессах.</p>
+      </div>
+    </div>
+
+    <div class="acc-item hidden">
+      <button class="acc-trigger">
+        IT‑навыки <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="acc-content">
+        <p>Windows Server, Linux, Web-dev, Python (Telegram-боты), SMM, кибербезопасность, автоматизация процессов.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="projects">
+  <h2 class="section-title hidden">Мои Проекты</h2>
+  <div class="projects-grid">
+    
+    <div class="project-card hidden">
+      <i class="fab fa-telegram tech-icon"></i>
+      <h3>Telegram-боты</h3>
+      <p>Разработка на Python (SQLite/JSON). Реализация ролей пользователей, истории запросов и автоматизация ответов.</p>
+    </div>
+
+    <div class="project-card hidden">
+      <i class="fas fa-laptop-code tech-icon"></i>
+      <h3>Веб-сервисы</h3>
+      <p>Сайты с личными кабинетами, лентами новостей. Проработка UX/UI и адаптивной верстки.</p>
+    </div>
+
+    <div class="project-card hidden">
+      <i class="fas fa-chart-line tech-icon"></i>
+      <h3>Аналитика сервисов</h3>
+      <p>Анализ онлайн-платформ, выявление слабых мест и формирование предложений по улучшению UX.</p>
+    </div>
+
+    <div class="project-card hidden">
+      <i class="fab fa-linux tech-icon"></i>
+      <h3>Администрирование</h3>
+      <p>Настройка серверов Linux и Windows Server: пользователи, права, службы, сети.</p>
+    </div>
+
+    <div class="project-card hidden">
+      <i class="fas fa-shield-alt tech-icon"></i>
+      <h3>Кибербезопасность</h3>
+      <p>Исследование уязвимостей, защита информационных систем, моделирование угроз.</p>
+    </div>
+
+    <div class="project-card hidden">
+      <i class="fas fa-network-wired tech-icon"></i>
+      <h3>Внутренние системы</h3>
+      <p>Веб-инструменты для автоматизации учебных и организационных процессов колледжа.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- СТАРАЯ ГАЛЕРЕЯ -->
+<section id="gallery">
+  <h2 class="section-title hidden">Галерея достижений</h2>
+  <div class="gallery-wrapper hidden">
+    <!-- 
+      Чтобы анимация была бесшовной (без рывков), список картинок должен быть 
+      продублирован. Анимация сдвигает ленту на 50% (половину), а потом резко 
+      возвращается в 0. Если вторая половина такая же, как первая, переход не заметен.
+    -->
+    <div class="gallery-track">
+      <!-- Первый набор -->
+      <img src="r.jpg" alt="Фото 1">
+      <img src="s (1).jpg" alt="Фото 2">
+      <img src="s (2).jpg" alt="Фото 3">
+      <img src="s (3).jpg" alt="Фото 4">
+      <img src="s (4).jpg" alt="Фото 5">
+      <img src="f.jpeg" alt="Фото 6">
+      <img src="y (2).jpg" alt="Фото 7">
+      <img src="y (3).jpg" alt="Фото 8">
+      
+      <!-- Дублируем набор для бесшовности -->
+      <img src="r.jpg" alt="Фото 1">
+      <img src="s (1).jpg" alt="Фото 2">
+      <img src="s (2).jpg" alt="Фото 3">
+      <img src="s (3).jpg" alt="Фото 4">
+      <img src="s (4).jpg" alt="Фото 5">
+      <img src="f.jpeg" alt="Фото 6">
+      <img src="y (2).jpg" alt="Фото 7">
+      <img src="y (3).jpg" alt="Фото 8">
+    </div>
+  </div>
+</section>
+<!-- КОНЕЦ ГАЛЕРЕИ -->
+
+<section id="contact">
+  <h2 class="section-title hidden">Связаться со мной</h2>
+  <div class="contact-container">
+    
+    <a href="tel:+77474677069" class="contact-btn hidden">
+      <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+      <div>
+        <h3>Телефон</h3>
+        <p style="opacity: 0.7; font-size: 14px;">+7 747 467 70 69</p>
+      </div>
+    </a>
+
+    <a href="https://t.me/obnalichka_deneg" target="_blank" class="contact-btn hidden">
+      <div class="contact-icon"><i class="fab fa-telegram-plane"></i></div>
+      <div>
+        <h3>Telegram</h3>
+        <p style="opacity: 0.7; font-size: 14px;">@obnalichka_deneg</p>
+      </div>
+    </a>
+
+    <a href="https://www.instagram.com/im_he_kak" target="_blank" class="contact-btn hidden">
+      <div class="contact-icon"><i class="fab fa-instagram"></i></div>
+      <div>
+        <h3>Instagram</h3>
+        <p style="opacity: 0.7; font-size: 14px;">@im_he_kak</p>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 • Ковалёв Станислав Александрович • Колледж МАБ • Алматы</p>
+  <p style="margin-top: 10px; font-size: 12px; opacity: 0.5;">Designed with Future Tech Vision</p>
+</footer>
+
+<script>
+  // 1. Canvas Background Animation
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.vx = (Math.random() - 0.5) * 0.5;
+      this.vy = (Math.random() - 0.5) * 0.5;
+      this.size = Math.random() * 2 + 1;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+    }
+    draw() {
+      ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--accent');
+      ctx.globalAlpha = 0.5;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function initParticles() {
+    particles = [];
+    const count = window.innerWidth > 768 ? 60 : 30;
+    for (let i = 0; i < count; i++) particles.push(new Particle());
+  }
+  initParticles();
+
+  function animateCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const accentColor = getComputedStyle(document.body).getPropertyValue('--accent').trim();
+    
+    particles.forEach((p, index) => {
+      p.update();
+      p.draw();
+      
+      for (let j = index + 1; j < particles.length; j++) {
+        const p2 = particles[j];
+        const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+        if (dist < 150) {
+          ctx.strokeStyle = accentColor;
+          ctx.globalAlpha = 1 - dist / 150;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      }
+    });
+    requestAnimationFrame(animateCanvas);
+  }
+  animateCanvas();
+
+  // 2. Theme Toggle
+  const themeBtn = document.getElementById('themeToggle');
+  const icon = themeBtn.querySelector('i');
+  themeBtn.addEventListener('click', () => {
+    document.body.classList.toggle('light');
+    if(document.body.classList.contains('light')) {
+      icon.classList.remove('fa-moon');
+      icon.classList.add('fa-sun');
+    } else {
+      icon.classList.remove('fa-sun');
+      icon.classList.add('fa-moon');
+    }
+  });
+
+  // 3. Accordion Logic
+  document.querySelectorAll('.acc-trigger').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
+      const content = item.querySelector('.acc-content');
+      const isActive = item.classList.contains('active');
+      
+      document.querySelectorAll('.acc-item').forEach(other => {
+        other.classList.remove('active');
+        other.querySelector('.acc-content').style.maxHeight = null;
+      });
+
+      if (!isActive) {
+        item.classList.add('active');
+        content.style.maxHeight = content.scrollHeight + "px";
+      }
+    });
+  });
+
+  // 4. Scroll Animation
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.hidden').forEach((el) => observer.observe(el));
+
+</script>
+</body>
+</html>
